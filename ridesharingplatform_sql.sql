@@ -10,6 +10,9 @@ select * from vehicledetails;
 
 select * from vehicletypes;
 
+insert into vehicletypes values 
+(1, 10, 4, 'suv'), (2, 15, 4, 'sedan'), (3, 8, 1, '2 wheeler'), (4, 13, 3, 'jeep'), (5, 20, 6, '7 wheeler');
+
 select * from bookings;
 
 INSERT INTO bookings(bookingid, bookedon, rideruserid, noofseats, totalamount, 
