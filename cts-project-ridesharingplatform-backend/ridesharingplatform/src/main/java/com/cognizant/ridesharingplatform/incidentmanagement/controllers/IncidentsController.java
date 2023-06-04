@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class IncidentsController {
 	@Autowired
 	IncidentsServiceImp incSerImp;
