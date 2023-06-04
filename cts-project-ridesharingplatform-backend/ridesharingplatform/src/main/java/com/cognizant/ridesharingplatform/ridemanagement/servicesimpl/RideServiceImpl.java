@@ -13,7 +13,6 @@ import com.cognizant.ridesharingplatform.ridemanagement.dtos.SearchCriteriaDto;
 import com.cognizant.ridesharingplatform.ridemanagement.entities.Bookings;
 import com.cognizant.ridesharingplatform.ridemanagement.entities.Distances;
 import com.cognizant.ridesharingplatform.ridemanagement.entities.RideSchedules;
-import com.cognizant.ridesharingplatform.ridemanagement.entities.Vehicles;
 import com.cognizant.ridesharingplatform.ridemanagement.exceptions.BadSearchCriteriaException;
 import com.cognizant.ridesharingplatform.ridemanagement.exceptions.BookingAlreadyExistException;
 import com.cognizant.ridesharingplatform.ridemanagement.exceptions.MaxSeatsPerRideExceededException;
@@ -26,8 +25,9 @@ import com.cognizant.ridesharingplatform.ridemanagement.mapper.RideSchedulesMapp
 import com.cognizant.ridesharingplatform.ridemanagement.repos.BookingsRepository;
 import com.cognizant.ridesharingplatform.ridemanagement.repos.DistancesRepository;
 import com.cognizant.ridesharingplatform.ridemanagement.repos.RideSchedulesRepository;
-import com.cognizant.ridesharingplatform.ridemanagement.repos.VehiclesRepository;
 import com.cognizant.ridesharingplatform.ridemanagement.services.RideService;
+import com.cognizant.ridesharingplatform.vehiclemanagement.model.Vehicle;
+import com.cognizant.ridesharingplatform.vehiclemanagement.repository.VehicleRepository;
 @Service
 public class RideServiceImpl implements RideService{
 	
@@ -41,7 +41,7 @@ public class RideServiceImpl implements RideService{
 	RideSchedulesRepository rideSchedulesRepository;
 	
 	@Autowired
-	VehiclesRepository vehiclesRepository;
+	VehicleRepository vehiclesRepository;
 	
 	
 	public List<DistancesDto> getAllDistances(){
@@ -58,14 +58,14 @@ public class RideServiceImpl implements RideService{
 				if(rideSchedules==null) {
 					throw new NoRideFoundException();
 				}
-		Vehicles vehicle = vehiclesRepository.findByRegistrationNo(registrationNo);
+		Vehicle vehicle = vehiclesRepository.findByRegistrationNo(registrationNo);
 				if(vehicle==null) {
 					throw new NoRideFoundException();
 				}
 				String ridefrom=rideSchedules.getRideFrom();
 				String rideto=rideSchedules.getRideTo();
 		Distances distance=distancesRepository.findDistanceInKmsBydistancefromAndDistanceTo(ridefrom,rideto);
-		int fareperkm = vehicle.getFarePerKm();
+		int fareperkm = vehicle.getVehicleTypes().getFarePerKM();
 		int dis=distance.getDistanceInKms();
 		return fareperkm*dis;
 	}
@@ -74,7 +74,7 @@ public class RideServiceImpl implements RideService{
 	public RideSchedulesDto createRide(RideSchedulesDto rideSchedulesDto)
 			throws VehicleNotApprovedException, MaximumCapacityExceededException,NoVehicleFoundException {
 		// TODO Auto-generated method stub
-		Vehicles vehicles=vehiclesRepository.findByRegistrationNo(rideSchedulesDto.getVehicleRegistrationNo());
+		Vehicle vehicles=vehiclesRepository.findByRegistrationNo(rideSchedulesDto.getVehicleRegistrationNo());
 		if(vehicles==null) {
 			throw new NoVehicleFoundException("No vehicle found with the given regitration number");
 		}
@@ -82,7 +82,7 @@ public class RideServiceImpl implements RideService{
 			throw new VehicleNotApprovedException();
 	
 		}
-		else if(rideSchedulesDto.getNoOfSeatsAvailable()>vehicles.getMaxSeats()) {
+		else if(rideSchedulesDto.getNoOfSeatsAvailable()>vehicles.getVehicleTypes().getMaxPassengersAllowed()) {
 			throw new MaximumCapacityExceededException();
 		}
 		
