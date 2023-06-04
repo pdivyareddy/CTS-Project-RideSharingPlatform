@@ -42,3 +42,9 @@ select * from incidents;
 select * from incident_types;
 
 select * from investigation_details;
+
+select * from companies;
+
+select * from drivinglicenses;
+
+select * from userapplication;
