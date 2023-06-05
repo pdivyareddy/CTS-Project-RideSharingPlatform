@@ -40,8 +40,8 @@ public class VehicleServiceImpl implements VehicleService {
 	VehicleDetailsRepository vehicleDetailsRepository;
 
 	private ModelMapper modelMapper = new ModelMapper();
-
-	private static final Pattern registrationPattern = Pattern.compile("^[A-Z]{2}[0-9]{2}[A-Z]{2}[0-9]{4}$");
+	
+    private static String pattern = "^[A-Z]{2}\\d{2}[A-Z]{2}\\d{4}$";
 
 	public List<String> getVehicleTypes() {
 		List<String> vehicleTypes = vehicleTypesRepository.getVehicleTypes();
@@ -57,7 +57,7 @@ public class VehicleServiceImpl implements VehicleService {
 
 	public ResponseEntity<String> addVehicle(Vehicle vehicle) {
 		try {
-			if (!registrationPattern.matcher(vehicle.getRegistrationNo()).matches()) {
+			if(!vehicle.getRegistrationNo().matches(pattern)) {
 				throw new InvalidRegistrationNoException("Invalid registration number format");
 			}
 		} catch (InvalidRegistrationNoException ex) {

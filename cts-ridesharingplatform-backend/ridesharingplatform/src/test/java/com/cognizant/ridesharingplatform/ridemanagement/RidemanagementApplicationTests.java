@@ -29,7 +29,7 @@ class RidemanagementApplicationTests {
 		
 		VehicleRepository vehiclesRepository=context.getBean(VehicleRepository.class);
 		Vehicle vehicles=new Vehicle();
-		vehicles.setRegistrationNo("AP04123456");
+		vehicles.setRegistrationNo("AP04CZ3456");
 		vehicles.setInspectionStatus("approved");
 		vehicles.setBelongsToUserId(0);
 		vehiclesRepository.save(vehicles);
