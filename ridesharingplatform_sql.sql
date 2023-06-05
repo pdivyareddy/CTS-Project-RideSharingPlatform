@@ -38,7 +38,7 @@ select * from rideschedules;
 
 INSERT INTO rideschedules(id, ridefrom, rideto,ridestartson, ridetime, ridefare,
 vehicleregistrationno, motoristuserid, noofseatsavailable)
-VALUES(1001, 'Point A', 'Point B', '2023-10-05', '23:00:00','20', 'APO4123451',  2001, 2);
+VALUES(1001, 'Point A', 'Point B', '2023-10-05', '23:00:00','20', 'AP27CZ1568',  2001, 2);
 
 select * from incidents;
 
@@ -48,6 +48,16 @@ select * from investigation_details;
 
 select * from companies;
 
+INSERT INTO COMPANIES(Id,Company_Name,Building_Name,Security_Incharge_Name,Security_Help_Desk_Number)
+VALUES ('12345','ABC','12','RAJ','9000000000');
+
 select * from drivinglicenses;
 
+INSERT INTO DRIVINGLICENSES(Id,User_Id,License_No,Expiration_Date,RTA,Allowed_Vehicles)
+VALUES('12345','1234567890','12300','2023-12-19','RTA','BIKE');
+
 select * from userapplication;
+
+INSERT INTO USERAPPLICATION(User_Id,User_name,Official_Email,Phone_Number,Company_Id,
+Designation,Role,Employee_Id,Aadhar_Number,Application_Status)
+VALUES('1234567890','JAGGU','ABC@GMAIL.COM','9876454013','12345','MANAGER','MOTORIST','2263003','123456789012','APPROVED');
