@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.DistancesDto;
-import com.cognizant.ridesharingplatform.ridemanagement.dtos.FareParametersDto;
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.RideSchedulesDto;
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.SearchCriteriaDto;
 import com.cognizant.ridesharingplatform.ridemanagement.entities.Bookings;
@@ -33,8 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins="http://localhost:49559")
+@RequestMapping
+@CrossOrigin(origins="http://localhost:4200")
 public class RideController {
 
 	@Autowired
@@ -42,7 +42,7 @@ public class RideController {
 
 	// EndPoint 1
 
-	@GetMapping("/distances")
+	@GetMapping("/api/distances")
 	public ResponseEntity<List<DistancesDto>> getAllDistances() {
 		log.info("Request for returning distances");
 		List<DistancesDto> distances = rideService.getAllDistances();
@@ -52,27 +52,31 @@ public class RideController {
 
 	// ENDPOINT 2
 
-	@GetMapping("/rides/calculatefare")
-	public ResponseEntity<Double> calculateFare(@RequestBody FareParametersDto fareParametersDto)
-			throws NoRideFoundException {
+	@PostMapping("/api/rides/calculatefare/{vehicleRegistrationNo}/{rFrom}/{rTo}")
+	public int calculateFare(@PathVariable String vehicleRegistrationNo,@PathVariable String rFrom,@PathVariable String rTo) {
 		log.info("Request for calculating fare");
-		double fare = rideService.calculateFare(fareParametersDto);
-		return ResponseEntity.ok(fare);
+		int fare = rideService.calculateFare(vehicleRegistrationNo,rFrom,rTo);
+		return fare;
 	}
 	// ENDPOINT 3
 
-	@PostMapping(path = "rides/schedule", consumes = "application/json")
-	public ResponseEntity<Void> insertRide(@Valid @RequestBody RideSchedulesDto rideSchedulesDto)
+	@PostMapping(path = "/api/rides/schedule", consumes = "application/json")
+	public ResponseEntity<Integer> insertRide(@Valid @RequestBody RideSchedulesDto rideSchedulesDto)
 			throws VehicleNotApprovedException, MaximumCapacityExceededException, NoVehicleFoundException {
 		log.info("Request for inserting a new ride");
-		//RideSchedulesDto newRide=
-		rideService.createRide(rideSchedulesDto);
+		String rgno=rideSchedulesDto.getVehicleRegistrationNo();
+		String rfrom=rideSchedulesDto.getRideFrom();
+		String rto=rideSchedulesDto.getRideTo();
+		int fare=calculateFare(rgno,rfrom,rto);
+		rideSchedulesDto.setRideFare(fare);
+		RideSchedulesDto newRide=rideService.createRide(rideSchedulesDto);
 		log.info("Response Generated for inserting a new ride");
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		
+		return new ResponseEntity<Integer>(fare,HttpStatus.CREATED);
 	}
 	// ENDPOINT 4
 
-	@GetMapping(path = "rides/search")
+	@PostMapping(path = "/api/rides/search",consumes = "application/json")
 	public List<RideSchedulesDto> searchRideSchedule(@Valid @RequestBody SearchCriteriaDto searchCriteriaDto)
 			throws BadSearchCriteriaException, NoRideFoundException {
 		log.info("Request for searching ride schedules");
@@ -86,17 +90,17 @@ public class RideController {
 	// ENDPOINT 5
 	
 
-	@PostMapping(path = "/rides/book", consumes = "application/json")
-	public ResponseEntity<Integer> createBooking(@RequestBody Bookings bookings)
+	@PostMapping(path = "/api/rides/book", consumes = "application/json")
+	public ResponseEntity<Bookings> createBooking(@RequestBody Bookings bookings)
 			throws BookingAlreadyExistException, MaxSeatsPerRideExceededException {
 		log.info("Request for adding new booking");
-		Bookings booking = this.rideService.createBooking(bookings);
-		int bookingid = booking.getBookingId();
+		int bookingid = bookings.getBookingId();
+		//int ridescheduleid=bookings.getRideschedeules().getId();
+		//bookings.setRideScheduleId(ridescheduleid);
+		Bookings booking = rideService.createBooking(bookings);
 		log.info("Response generated for adding new booking");
-		return new ResponseEntity<Integer>(bookingid, HttpStatus.CREATED);
+		return new ResponseEntity<Bookings>(booking, HttpStatus.CREATED);
 	}
-	
-	
 	
 	
 	
