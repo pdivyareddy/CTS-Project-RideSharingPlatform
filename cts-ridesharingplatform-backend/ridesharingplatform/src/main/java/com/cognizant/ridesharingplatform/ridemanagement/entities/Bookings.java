@@ -47,8 +47,9 @@ public class Bookings {
 	@Column(name = "paymentmode")
 	private String paymentMode;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ridescheduleid", referencedColumnName = "id")
-	private RideSchedules rideschedeules;
+	//@ManyToOne(cascade = CascadeType.ALL)
+	//@JoinColumn(name = "ridescheduleid", referencedColumnName = "id")
+	@Column(name="ridescheduleid")
+	private int rideScheduleId;
 
 }
