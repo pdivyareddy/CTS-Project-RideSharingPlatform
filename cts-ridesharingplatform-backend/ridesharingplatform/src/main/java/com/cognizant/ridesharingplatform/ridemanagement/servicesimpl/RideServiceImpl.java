@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.DistancesDto;
-import com.cognizant.ridesharingplatform.ridemanagement.dtos.FareParametersDto;
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.RideSchedulesDto;
 import com.cognizant.ridesharingplatform.ridemanagement.dtos.SearchCriteriaDto;
 import com.cognizant.ridesharingplatform.ridemanagement.entities.Bookings;
@@ -51,20 +50,14 @@ public class RideServiceImpl implements RideService{
 	}
 	
 	@Override
-	public int calculateFare(FareParametersDto fareParametersDto) throws NoRideFoundException {
+	public int calculateFare(String vehicleRegistrationNo,String rFrom,String rTo) {
 		// TODO Auto-generated method stub
-		String registrationNo = fareParametersDto.getRegistrationNo();
-		RideSchedules rideSchedules=rideSchedulesRepository.findByVehicleRegistrationNo(registrationNo);
-				if(rideSchedules==null) {
-					throw new NoRideFoundException();
-				}
-		Vehicle vehicle = vehiclesRepository.findByRegistrationNo(registrationNo);
-				if(vehicle==null) {
-					throw new NoRideFoundException();
-				}
-				String ridefrom=rideSchedules.getRideFrom();
-				String rideto=rideSchedules.getRideTo();
-		Distances distance=distancesRepository.findDistanceInKmsBydistancefromAndDistanceTo(ridefrom,rideto);
+		
+		//RideSchedules rideSchedules=rideSchedulesRepository.findByVehicleRegistrationNo(vehicleRegistrationNo);
+		Vehicle vehicle = vehiclesRepository.findByRegistrationNo(vehicleRegistrationNo);
+				//String ridefrom=rideSchedules.getRideFrom();
+				//String rideto=rideSchedules.getRideTo();
+		Distances distance=distancesRepository.findDistanceInKmsBydistancefromAndDistanceTo(rFrom,rTo);
 		int fareperkm = vehicle.getVehicleTypes().getFarePerKM();
 		int dis=distance.getDistanceInKms();
 		return fareperkm*dis;
@@ -136,12 +129,7 @@ public class RideServiceImpl implements RideService{
 
 	}
 	
-	
-	
-	
-	
-	
-	
+}
 	
 	
 	
@@ -172,4 +160,3 @@ public class RideServiceImpl implements RideService{
 	}
 	 */
 
-}
